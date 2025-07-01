@@ -5,10 +5,10 @@ import com.carlos.proposta_app.dto.PropostaResponseDto;
 import com.carlos.proposta_app.service.PropostaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/proposta")
@@ -20,6 +20,14 @@ public class PropostaController {
     @PostMapping
     public ResponseEntity criar(@RequestBody PropostaRequestDto requestDto){
         PropostaResponseDto responseDto = propostaService.criar(requestDto);
-        return ResponseEntity.ok(responseDto);
+        return ResponseEntity.created(ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(responseDto.getId())
+                .toUri()).body(responseDto);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<PropostaResponseDto>> obterPropostas(){
+        return ResponseEntity.ok(propostaService.obterProposta());
     }
 }
